@@ -26,9 +26,17 @@ def upload_image():
 
     # Send image to API
     response = requests.post('https://pre.cm/API.htm', json={'image': encoded_image})
+    print("Status Code:", response.status_code)
+    if response.status_code != 200:
+        return jsonify({'error': f'API returned status code {response.status_code}'}), response.status_code
 
+    print("Response Text:", response.text)
     # Return API response
-    return jsonify(response.json())
+    if response.headers.get('Content-Type') == 'application/json':
+        return jsonify(response.json())
+    else:
+        return jsonify({'error': 'Unexpected response format'}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

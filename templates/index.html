@@ -4,17 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Mirror</title>
-</head>
 <body>
     <h1>Smart Mirror Camera</h1>
     <video id="video" width="640" height="480" autoplay></video>
-    <button id="capture">Capture Image</button>
+    <p>Capturing images automatically...</p>
     <form id="uploadForm" method="post" enctype="multipart/form-data">
         <input type="file" id="imageFile" name="image" style="display: none;">
     </form>
     <script>
         const video = document.getElementById('video');
-        const captureButton = document.getElementById('capture');
         const uploadForm = document.getElementById('uploadForm');
         const imageFileInput = document.getElementById('imageFile');
 
@@ -27,8 +25,8 @@
                 console.error('Error accessing camera: ', err);
             });
 
-        // Capture and upload image
-        captureButton.addEventListener('click', () => {
+        // Function to capture and upload the image
+        function captureAndUpload() {
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
@@ -53,7 +51,10 @@
                     console.error('Error uploading image:', error);
                 });
             });
-        });
+        }
+
+        // Automatically capture and upload images every 5 seconds (5000 milliseconds)
+        setInterval(captureAndUpload, 5000);
     </script>
 </body>
 </html>
