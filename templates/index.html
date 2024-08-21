@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Mirror</title>
+</head>
+<body>
+    <h1>Smart Mirror Camera</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="capture">Capture Image</button>
+    <form id="uploadForm" method="post" enctype="multipart/form-data">
+        <input type="file" id="imageFile" name="image" style="display: none;">
+    </form>
+    <script>
+        const video = document.getElementById('video');
+        const captureButton = document.getElementById('capture');
+        const uploadForm = document.getElementById('uploadForm');
+        const imageFileInput = document.getElementById('imageFile');
+
+        // Start the camera stream
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                console.error('Error accessing camera: ', err);
+            });
+
+        // Capture and upload image
+        captureButton.addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                const formData = new FormData();
+                formData.append('image', file);
+
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('API Response:', data);
+                    // Handle and display the API response as needed
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
